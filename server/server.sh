@@ -67,16 +67,12 @@ function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] current
 	echo "archive : $archive; mode : $mode; path : $path"
 	if [ ! -f "./$archive.arc" ];then echo "l'archive $archive n'existe pas"; return; fi
 	#verify current path
-	if ! cat "./$archive.arc" | sed '/^directory .+$/!d' | grep -q $path; then echo "path $path doesnt exist in $archive"; return; fi
-	echo "ok"
-
-	# while read line; do
-
-	# done < 
+	if ! cat "./$archive.arc" | grep -q "^directory $path$"; then echo "path $path doesnt exist in $archive"; return; fi
 	if [ $mode = "ls" ]; then
-		(())# while read lin
+		filesInCurrentPath=$(sed -n "/^directory $(echo $path | sed 's/\//\\\//g')/,/^@/{p;/^@/q}" $archive.arc | head --lines=-1 | tail --lines=+2)
+		echo $filesInCurrentPath
 	elif [ $mode = "cd" ]; then
-	(())
+		((0))
 	fi
 }
 

@@ -25,7 +25,7 @@ elif [ "$1" = "-list" ];then
 	rep=$(echo "list" | nc -w1 $ADRESSE $PORT)
 	echo $rep
 elif [ "$1" = "-browse" ];then
-	rep=$(echo "browse ls \/ archive2" | nc -w1 $ADRESSE $PORT)
+	rep=$(echo "browse ls folderForTesting/un archive2" | nc -w1 $ADRESSE $PORT)
 	echo $rep
 else
 	echo "CMD must be one of \"-create, -list, -browse, -extract\""
