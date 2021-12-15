@@ -38,7 +38,7 @@ function commande-test() {
    echo test
 }
 
-function commande-create(){
+function commande-create() {
 	name=$(echo $1 | cut -d' ' -f1)
 	content=$(echo $1 | cut -d' ' -f2-)
 	printf "$content" > "./$name.arc"
@@ -57,6 +57,27 @@ function commande-extract(){
 }
 function commande-list(){
 	echo $(ls | grep '.*\.arc' | sed 's/\(.\)\.arc/\1/g')
+}
+
+function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] currentPath archiveName
+	mode="$(echo $1 | cut -d' ' -f1)"
+	path="$(echo $1 | cut -d' ' -f2)"
+	archive="$(echo $1 | cut -d' ' -f3)"
+	#verify if archive exists
+	echo "archive : $archive; mode : $mode; path : $path"
+	if [ ! -f "./$archive.arc" ];then echo "l'archive $archive n'existe pas"; return; fi
+	#verify current path
+	if ! cat "./$archive.arc" | sed '/^directory .+$/!d' | grep -q $path; then echo "path $path doesnt exist in $archive"; return; fi
+	echo "ok"
+
+	# while read line; do
+
+	# done < 
+	if [ $mode = "ls" ]; then
+		(())# while read lin
+	elif [ $mode = "cd" ]; then
+	(())
+	fi
 }
 
 accept-loop
