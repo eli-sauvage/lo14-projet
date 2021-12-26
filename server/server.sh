@@ -61,15 +61,24 @@ function commande-list(){
 
 function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] currentPath archiveName
 	mode="$(echo $1 | cut -d' ' -f1)"
-	path="$(echo $1 | cut -d' ' -f2)"
+	path="folderForTesting$(echo $1 | cut -d' ' -f2)"
+	if [ "${path: -1}" = "/" ];then path="${path::-1}";fi
+	echo $path > testt
 	archive="$(echo $1 | cut -d' ' -f3)"
 	#verify if archive exists
-	echo "archive : $archive; mode : $mode; path : $path"
+	# echo "archive : $archive; mode : $mode; path : $path"
 	if [ ! -f "./$archive.arc" ];then echo "l'archive $archive n'existe pas"; return; fi
 	#verify current path
-	if ! cat "./$archive.arc" | grep -q "^directory $path$"; then echo "path $path doesnt exist in $archive"; return; fi
-	if [ $mode = "ls" ]; then
-		filesInCurrentPath=$(sed -n "/^directory $(echo $path | sed 's/\//\\\//g')/,/^@/{p;/^@/q}" $archive.arc | head --lines=-1 | tail --lines=+2)
+	if ! cat "./$archive.arc" | grep -q "^directory ${path}$"; then echo "le dossier $path n'existe pas dans l'archive $archive"; return; fi
+	if [ $mode = "testForFolder" ];then
+		echo "ok"
+	elif [ $mode = "ls" ]; then
+		# filesInCurrentPath=$(sed -n "/^directory $(echo $path | sed 's/\//\\\//g')/,/^@/{p;/^@/q}" $archive.arc | head --lines=-1 | tail --lines=+2)
+		echo "$path" > testt
+		echo "directory $(echo $path | sed 's/\//\\\//g')" > pattern1
+		while read l;do
+			echo $l
+		done <<< $(sed -n "/^directory $(echo $path | sed 's/\//\\\//g')/,/^@/{p;/^@/q}" $archive.arc | head --lines=-1 | tail --lines=+2) #https://unix.stackexchange.com/questions/264962/print-lines-of-a-file-between-two-matching-patterns
 		echo $filesInCurrentPath
 	elif [ $mode = "cd" ]; then
 		((0))

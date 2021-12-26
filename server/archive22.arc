@@ -1,23 +1,15 @@
-3:26
+3:18
 
 directory folderForTesting
 a -rwxrwxrwx 6 1 1
 b -rwxrwxrwx 6 2 1
 c -rwxrwxrwx 6 3 1
-deux drwxrwxrwx 13K 
+deux drwxrwxrwx 4.1K 
 un drwxrwxrwx 4.1K 
 @
 directory folderForTesting/deux
 plLignes -rwxrwxrwx 17 4 5
-trois drwxrwxrwx 8.1K 
 vide -rwxrwxrwx 0 
-@
-directory folderForTesting/deux/trois
-trois drwxrwxrwx 4.1K 
-yes -rwxrwxrwx 3 
-@
-directory folderForTesting/deux/trois/trois
-ui -rwxrwxrwx 2 
 @
 directory folderForTesting/un
 d -rwxrwxrwx 7 9 1
