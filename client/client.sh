@@ -66,7 +66,7 @@ elif [ "$1" = "-browse" ]; then
 		fi
 		commande=$(echo $input | awk '{print $1}')
 		if [ "$commande" = "ls" ]; then
-			# echo "browse ls $folder archive2"
+			echo "browse ls $folder archive2"
 			rep=$(echo "browse ls $folder archive2" | nc -w1 $ADRESSE $PORT)
 			echo "$rep"
 		elif [ "$commande" = "cd" ]; then
@@ -76,12 +76,17 @@ elif [ "$1" = "-browse" ]; then
 			else
 				path="$folder"
 			fi
+		elif [ "$commande" = "pwd" ];then
+			echo $path
+		elif [ "$commande" = "cat" ];then
+			rep=$(echo "browse cat $folder archive2" | nc -w1 $ADRESSE $PORT)
+			echo "$rep"
 		elif [ "$commande" = "help" ]; then
 			echo "commandes : ls, cd, exit"
 		elif [ "$commande" = "exit" ]; then
 			break
 		else
-			echo "commande non reconnue, essayez help pour une liste des commandes"
+			echo "commande non reconnue, essayez 'help' pour une liste des commandes ou exit pour sortir"
 		fi
 		printf "$path> "
 	done
