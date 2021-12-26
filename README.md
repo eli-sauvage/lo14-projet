@@ -2,7 +2,7 @@
 ## To Start
 `bash server.sh PORT` on the server machine and
 `bash client.sh CMD ADRESS PORT [opt]` on the client
-## TODO
+## TODO / Known Issues
  - toArchive not adding file contents anymore ?
  - rm
  - touch
