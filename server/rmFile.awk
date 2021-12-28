@@ -13,7 +13,6 @@ BEGIN{
     if(flag){
         if($1 == f){
             for(i=bodyBegin+$4-1; i<=bodyBegin+$4+$5-2; i++){#?? mais ça marche
-                print "-"i
                 lignesASuppr[i]=1
             }
         }else{

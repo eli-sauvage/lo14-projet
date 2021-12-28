@@ -60,13 +60,11 @@ function commande-list() {
 }
 
 function testForFile() {
-	path=$1
-	archive=$2
-	p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
-	f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
-	echo file $f path $p arch $archive >out
-	fileExists=$(awk -f testForFileInArchive.awk -v path=$p -v file=$f ./$archive.arc)
-	echo $fileExists >>out
+	fPath=$1
+	fArchive=$2
+	fp=$(echo $fPath | sed 's/\(.*\)\/\(.*\)$/\1/')
+	ff=$(echo $fPath | sed 's/\(.*\)\/\(.*\)$/\2/')
+	fileExists=$(awk -f testForFileInArchive.awk -v path=$fp -v file=$ff ./$fArchive.arc)
 	if [ "$fileExists" = "0" ]; then
 		return 0
 	else
@@ -74,7 +72,9 @@ function testForFile() {
 	fi
 }
 function testForFolder() {
-	if ! cat "./$archive.arc" | grep -q "^directory ${path}$"; then
+	fPath=$1
+	fArchive=$2
+	if ! cat "./$fArchive.arc" | grep -q "^directory ${fPath}$"; then
 		return 1
 	else
 		return 0
@@ -97,7 +97,7 @@ function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] current
 			echo "le dossier n'existe pas dans $archive"
 		fi
 	elif [ $mode = "ls" ]; then
-		if ! testForFolder $path $archive; then
+		if ! testForFolder "$path" $archive; then
 			echo "le dossier $path n'existe pas dans $archive"
 			return
 		fi
@@ -127,6 +127,24 @@ function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] current
 		else
 			echo "pas de dossier ou fichier $path dans l'archive $archive"
 		fi
+	elif [ $mode = "touch" ];then
+		p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
+		f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
+		if ! testForFolder $p $archive;then
+			echo "le dossier $p n'existe pas dans $archive"
+			return
+		fi
+		if testForFile "$path" $archive;then
+			echo "le fichier $path existe deja, merci de le supprimer d'abord"
+			return
+		fi
+		cat $archive.arc > /tmp/$archive.arc
+		rm $archive.arc
+		while read l;do
+			echo $l >> $archive.arc
+		done <<< $(awk -f touch.awk -v p=$p -v f=$f /tmp/$archive.arc)
+		rm /tmp/$archive.arc
+		echo "fichier cree"
 	fi
 }
 
