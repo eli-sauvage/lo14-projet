@@ -83,6 +83,9 @@ elif [ "$1" = "-browse" ]; then
 			echo "$rep"
 		elif [ "$commande" = "help" ]; then
 			echo "commandes : ls, cd, exit"
+		elif [ "$commande" = "rm" ];then
+			rep=$(echo "browse rm $folder archive2" | nc -w1 $ADRESSE $PORT)
+			echo "$rep"
 		elif [ "$commande" = "exit" ]; then
 			break
 		else

@@ -29,10 +29,12 @@ while read line;do
 		if [ ! -d $element ];then
 			size=$(wc -l $element | cut -d' ' -f1)
 			if [ "$size" != "0" ];then
+			# echo $currentFolder $size $element >> out
 				h=$h"$bodyLine "
 				h=$h$size
 				bodyLine=$((bodyLine+size))
 				while read elemLine;do
+					echo $elemLine >> out
 					b=$b"$elemLine\n"
 				done < $element
 			fi
