@@ -118,10 +118,11 @@ function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] current
 	elif [ $mode = "rm" ]; then
 		p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
 		f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
-		# 	if testForFile $path $archive; then
-
-		if testForFolder $path $archive; then
-			echo "$(awk -f rm.awk -v p=$p -v f=$f $archive.arc)" >$archive.arc
+		if testForFile $path $archive; then
+			echo "$(awk -f rmFile.awk -v p=$p -v f=$f $archive.arc)" > $archive.arc
+			echo "fichier supprime"
+		elif testForFolder $path $archive; then
+			echo "$(awk -f rmFolder.awk -v p=$p -v f=$f $archive.arc)" > $archive.arc
 			echo "dossier supprime"
 		else
 			echo "pas de dossier ou fichier $path dans l'archive $archive"
