@@ -3,7 +3,7 @@
 `bash server.sh PORT` on the server machine and
 `bash client.sh CMD ADRESS PORT [opt]` on the client
 ## TODO / Known Issues
- - cat : possibility for several files
+ - mkdir opt -p
  - possibility for "cd ../.."
  - ls : missing "-l", "-a" and "-la"
  - changing "/" to "\"

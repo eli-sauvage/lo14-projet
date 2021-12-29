@@ -82,88 +82,92 @@ function testForFolder() {
 }
 function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] currentPath archiveName
 	mode="$(echo $1 | cut -d' ' -f1)"
-	path="folderForTesting$(echo $1 | cut -d' ' -f2)"
-	if [ "${path: -1}" = "/" ]; then path="${path::-1}"; fi
-	archive="$(echo $1 | cut -d' ' -f3)"
+	paths="$(echo $1 | awk '{for(i=2; i<NF; i++)print "folderForTesting"$i}')"
+	# return
+	archive="$(echo $1 | awk '{print $NF}')"
+	echo $archive >out
 	#verify if archive exists
 	if [ ! -f "./$archive.arc" ]; then
 		echo "l'archive $archive n'existe pas"
 		return
 	fi
-	if [ $mode = "testForFolder" ]; then
-		if testForFolder $path $archive; then
-			echo "ok"
-		else
-			echo "le dossier n'existe pas dans $archive"
+	for path in $paths; do #in case of several inputs
+		if [ "${path: -1}" = "/" ]; then path="${path::-1}"; fi
+		if [ $mode = "testForFolder" ]; then
+			if testForFolder $path $archive; then
+				echo "ok"
+			else
+				echo "le dossier n'existe pas dans $archive"
+			fi
+		elif [ $mode = "ls" ]; then
+			if ! testForFolder "$path" $archive; then
+				echo "le dossier $path n'existe pas dans $archive"
+				return
+			fi
+			while read l; do
+				echo $l
+			done <<<$(sed -n "/^directory $(echo $path | sed 's/\//\\\//g')/,/^@/{p;/^@/q}" $archive.arc | head --lines=-1 | tail --lines=+2) #https://unix.stackexchange.com/questions/264962/print-lines-of-a-file-between-two-matching-patterns
+			echo $filesInCurrentPath
+		elif [ $mode = "cat" ]; then
+			if ! testForFile $path $archive; then
+				echo "le fichier $path n'existe pas dans $archive"
+				return
+			fi
+			p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
+			f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
+			while read l; do
+				echo $l
+			done <<<$(awk -f cat.awk -v path=$p -v file=$f ./$archive.arc)
+		elif [ $mode = "rm" ]; then
+			p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
+			f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
+			if testForFile $path $archive; then
+				echo "$(awk -f rmFile.awk -v p=$p -v f=$f $archive.arc)" >$archive.arc
+				echo "fichier supprime"
+			elif testForFolder $path $archive; then
+				echo "$(awk -f rmFolder.awk -v p=$p -v f=$f $archive.arc)" >$archive.arc
+				echo "dossier supprime"
+			else
+				echo "pas de dossier ou fichier $path dans l'archive $archive"
+			fi
+		elif [ $mode = "touch" ]; then
+			p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
+			f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
+			if ! testForFolder $p $archive; then
+				echo "le dossier $p n'existe pas dans $archive"
+				return
+			fi
+			if testForFile "$path" $archive; then
+				echo "le fichier $path existe deja, merci de le supprimer d'abord"
+				return
+			fi
+			cat $archive.arc >/tmp/$archive.arc
+			rm $archive.arc
+			while read l; do
+				echo $l >>$archive.arc
+			done <<<$(awk -f touch.awk -F " |:" -v p=$p -v f=$f /tmp/$archive.arc)
+			rm /tmp/$archive.arc
+			echo "fichier cree"
+		elif [ $mode = "mkdir" ]; then
+			p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
+			f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
+			if ! testForFolder $p $archive; then
+				echo "le dossier $p n'existe pas dans $archive"
+				return
+			fi
+			if testForFolder "$path" $archive; then
+				echo "le dossier $path existe deja, merci de le supprimer d'abord"
+				return
+			fi
+			cat $archive.arc >/tmp/$archive.arc
+			rm $archive.arc
+			while read l; do
+				echo $l >>$archive.arc
+			done <<<$(awk -f mkdir.awk -F " |:" -v p=$p -v f=$f /tmp/$archive.arc)
+			rm /tmp/$archive.arc
+			echo "dossier cree"
 		fi
-	elif [ $mode = "ls" ]; then
-		if ! testForFolder "$path" $archive; then
-			echo "le dossier $path n'existe pas dans $archive"
-			return
-		fi
-		while read l; do
-			echo $l
-		done <<<$(sed -n "/^directory $(echo $path | sed 's/\//\\\//g')/,/^@/{p;/^@/q}" $archive.arc | head --lines=-1 | tail --lines=+2) #https://unix.stackexchange.com/questions/264962/print-lines-of-a-file-between-two-matching-patterns
-		echo $filesInCurrentPath
-	elif [ $mode = "cat" ]; then
-		if ! testForFile $path $archive; then
-			echo "le fichier $path n'existe pas dans $archive"
-			return
-		fi
-		p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
-		f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
-		while read l; do
-			echo $l
-		done <<<$(awk -f cat.awk -v path=$p -v file=$f ./$archive.arc)
-	elif [ $mode = "rm" ]; then
-		p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
-		f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
-		if testForFile $path $archive; then
-			echo "$(awk -f rmFile.awk -v p=$p -v f=$f $archive.arc)" > $archive.arc
-			echo "fichier supprime"
-		elif testForFolder $path $archive; then
-			echo "$(awk -f rmFolder.awk -v p=$p -v f=$f $archive.arc)" > $archive.arc
-			echo "dossier supprime"
-		else
-			echo "pas de dossier ou fichier $path dans l'archive $archive"
-		fi
-	elif [ $mode = "touch" ];then
-		p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
-		f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
-		if ! testForFolder $p $archive;then
-			echo "le dossier $p n'existe pas dans $archive"
-			return
-		fi
-		if testForFile "$path" $archive;then
-			echo "le fichier $path existe deja, merci de le supprimer d'abord"
-			return
-		fi
-		cat $archive.arc > /tmp/$archive.arc
-		rm $archive.arc
-		while read l;do
-			echo $l >> $archive.arc
-		done <<< $(awk -f touch.awk -v p=$p -v f=$f /tmp/$archive.arc)
-		rm /tmp/$archive.arc
-		echo "fichier cree"
-	elif [ $mode = "mkdir" ];then
-		p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
-		f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
-		if ! testForFolder $p $archive;then
-			echo "le dossier $p n'existe pas dans $archive"
-			return
-		fi
-		if testForFolder "$path" $archive;then
-			echo "le dossier $path existe deja, merci de le supprimer d'abord"
-			return
-		fi
-		cat $archive.arc > /tmp/$archive.arc
-		rm $archive.arc
-		while read l;do
-			echo $l >> $archive.arc
-		done <<< $(awk -f mkdir.awk -v p=$p -v f=$f /tmp/$archive.arc)
-		rm /tmp/$archive.arc
-		echo "dossier cree"
-	fi
+	done
 }
 
 accept-loop

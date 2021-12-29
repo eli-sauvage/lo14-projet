@@ -41,57 +41,68 @@ elif [ "$1" = "-browse" ]; then
 	printf "$path> "
 	while read input; do
 		#parse arg (relative to absolute)
-		folder=$(echo $input | awk '{print $2}')
-		if [ "$folder" = "." ]; then
-			folder="$path"
-		elif [ "$folder" = ".." ]; then
-			if [ "$path" = "/" ]; then
-				echo "pas de dossier parent"
-				printf "$path> "
-				continue
-			else
-				path=$path/$folder
-				if echo $path | grep -wq "^\/[^\/]*\/\.\.$"; then
-					folder="/"
+		folders=$(echo $input | awk '{for (i=2; i<=NF; i++) print $i}')
+		if [ -z "$folders" ];then folders=".";fi
+		out=""
+		for folder in $folders; do
+			if [ "$folder" = "." ]; then
+				folder="$path"
+			elif [ "$folder" = ".." ]; then
+				if [ "$path" = "/" ]; then
+					echo "pas de dossier parent"
+					printf "$path> "
+					continue
 				else
-					folder=$(echo $path | sed 's/^\(.*\/.*\)\/\(.*\)\/\.\.$/\1/g')
+					path=$path/$folder
+					if echo $path | grep -wq "^\/[^\/]*\/\.\.$"; then
+						folder="/"
+					else
+						folder=$(echo $path | sed 's/^\(.*\/.*\)\/\(.*\)\/\.\.$/\1/g')
+					fi
+				fi
+			elif [ ! "${folder:0:1}" = "/" ]; then
+				if [ "$path" = "/" ]; then
+					folder=$path$folder
+				else
+					folder=$path/$folder
 				fi
 			fi
-		elif [ ! "${folder:0:1}" = "/" ]; then
-			if [ "$path" = "/" ]; then
-				folder=$path$folder
-			else
-				folder=$path/$folder
-			fi
-		fi
+			if [ ! -z "$out" ];then out="$out ";fi
+			out="$out$folder"
+		done
+		folder=$out
+		# break
 		commande=$(echo $input | awk '{print $1}')
 		if [ "$commande" = "ls" ]; then
 			echo "browse ls $folder archive2"
 			rep=$(echo "browse ls $folder archive2" | nc -w1 $ADRESSE $PORT)
 			echo "$rep"
 		elif [ "$commande" = "cd" ]; then
+			folder="$(echo $folder | awk '{print $1}')" #only one arg
+			echo $"browse testForFolder $folder $4"
 			rep=$(echo "browse testForFolder $folder $4" | nc -w1 $ADRESSE $PORT)
 			if [ ! "$rep" = "ok" ]; then #erreur (autre que ok)
 				echo "err:$rep"
 			else
 				path="$folder"
 			fi
-		elif [ "$commande" = "pwd" ];then
+		elif [ "$commande" = "pwd" ]; then
 			echo $path
-		elif [ "$commande" = "cat" ];then
+		elif [ "$commande" = "cat" ]; then
+			echo "browse cat $folder archive2"
 			rep=$(echo "browse cat $folder archive2" | nc -w1 $ADRESSE $PORT)
+			echo "$rep"
+		elif [ "$commande" = "rm" ]; then
+			rep=$(echo "browse rm $folder archive2" | nc -w1 $ADRESSE $PORT)
+			echo "$rep"
+		elif [ "$commande" == "touch" ]; then
+			rep=$(echo "browse touch $folder archive2" | nc -w1 $ADRESSE $PORT)
+			echo "$rep"
+		elif [ "$commande" == "mkdir" ]; then
+			rep=$(echo "browse mkdir $folder archive2" | nc -w1 $ADRESSE $PORT)
 			echo "$rep"
 		elif [ "$commande" = "help" ]; then
 			echo "commandes : ls, cd, exit"
-		elif [ "$commande" = "rm" ];then
-			rep=$(echo "browse rm $folder archive2" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
-		elif [ "$commande" == "touch" ];then
-			rep=$(echo "browse touch $folder archive2" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
-		elif [ "$commande" == "mkdir" ];then
-			rep=$(echo "browse mkdir $folder archive2" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
 		elif [ "$commande" = "exit" ]; then
 			break
 		else

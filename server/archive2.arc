@@ -1,22 +1,19 @@
-3:26
+3:29
 
 directory folderForTesting
-a -rw-r--r-- 0
+a -rwxrwxrwx 6 1 1
 b -rwxrwxrwx 6 2 1
 c -rwxrwxrwx 6 3 1
 deux drwxrwxrwx 13K
 un drwxrwxrwx 4.1K
 @
 directory folderForTesting/deux
-quatre drw-r--r-- 0
 plLignes -rwxrwxrwx 17 4 5
 trois drwxrwxrwx 8.1K
 vide -rwxrwxrwx 0
 @
-directory folderForTesting/deux/quatre
-quatre -rw-r--r-- 0
-@
 directory folderForTesting/deux/trois
+a -rw-r--r-- 0
 trois drwxrwxrwx 4.1K
 yes -rwxrwxrwx 12 9 3
 @
@@ -27,7 +24,7 @@ directory folderForTesting/un
 d -rwxrwxrwx 7 13 1
 vide2 -rwxrwxrwx 0
 @
-
+osefa
 osefb
 osefc
 pl1

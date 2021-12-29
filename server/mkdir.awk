@@ -3,7 +3,8 @@ BEGIN{
     flag=0
 };
 {
-    print $0
+    if(NR==1)print $1":"$2+3
+    else print $0
     if($1 == "@" && flag){
         flag=0
         print "directory "p"/"f
