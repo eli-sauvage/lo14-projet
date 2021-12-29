@@ -7,4 +7,4 @@
  - possibility for "cd ../.."
  - ls : missing "-l", "-a" and "-la"
  - changing "/" to "\"
- - "folderForTesting" hardcoded in server
+- bash client.sh --> vsh

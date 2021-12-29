@@ -81,10 +81,10 @@ function testForFolder() {
 	fi
 }
 function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] currentPath archiveName
-	mode="$(echo $1 | cut -d' ' -f1)"
-	paths="$(echo $1 | awk '{for(i=2; i<NF; i++)print "folderForTesting"$i}')"
-	# return
 	archive="$(echo $1 | awk '{print $NF}')"
+	mainFolder="$(awk 'NR==3{print $2}' $archive.arc)"
+	mode="$(echo $1 | cut -d' ' -f1)"
+	paths="$(echo $1 | awk -v mainFolder=$mainFolder '{for(i=2; i<NF; i++)print mainFolder$i}')"
 	echo $archive >out
 	#verify if archive exists
 	if [ ! -f "./$archive.arc" ]; then
