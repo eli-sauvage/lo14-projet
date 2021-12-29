@@ -7,4 +7,4 @@
  - possibility for "cd ../.."
  - ls : missing "-l", "-a" and "-la"
  - changing "/" to "\"
-- bash client.sh --> vsh
+ - bash client.sh --> vsh
