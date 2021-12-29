@@ -89,6 +89,9 @@ elif [ "$1" = "-browse" ]; then
 		elif [ "$commande" == "touch" ];then
 			rep=$(echo "browse touch $folder archive2" | nc -w1 $ADRESSE $PORT)
 			echo "$rep"
+		elif [ "$commande" == "mkdir" ];then
+			rep=$(echo "browse mkdir $folder archive2" | nc -w1 $ADRESSE $PORT)
+			echo "$rep"
 		elif [ "$commande" = "exit" ]; then
 			break
 		else

@@ -145,6 +145,24 @@ function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] current
 		done <<< $(awk -f touch.awk -v p=$p -v f=$f /tmp/$archive.arc)
 		rm /tmp/$archive.arc
 		echo "fichier cree"
+	elif [ $mode = "mkdir" ];then
+		p=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\1/')
+		f=$(echo $path | sed 's/\(.*\)\/\(.*\)$/\2/')
+		if ! testForFolder $p $archive;then
+			echo "le dossier $p n'existe pas dans $archive"
+			return
+		fi
+		if testForFolder "$path" $archive;then
+			echo "le dossier $path existe deja, merci de le supprimer d'abord"
+			return
+		fi
+		cat $archive.arc > /tmp/$archive.arc
+		rm $archive.arc
+		while read l;do
+			echo $l >> $archive.arc
+		done <<< $(awk -f mkdir.awk -v p=$p -v f=$f /tmp/$archive.arc)
+		rm /tmp/$archive.arc
+		echo "dossier cree"
 	fi
 }
 

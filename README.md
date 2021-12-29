@@ -3,8 +3,8 @@
 `bash server.sh PORT` on the server machine and
 `bash client.sh CMD ADRESS PORT [opt]` on the client
 ## TODO / Known Issues
- - mkdir
  - cat : possibility for several files
  - possibility for "cd ../.."
  - ls : missing "-l", "-a" and "-la"
  - changing "/" to "\"
+ - "folderForTesting" hardcoded in server

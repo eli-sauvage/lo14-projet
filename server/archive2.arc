@@ -8,9 +8,13 @@ deux drwxrwxrwx 13K
 un drwxrwxrwx 4.1K
 @
 directory folderForTesting/deux
+quatre drw-r--r-- 0
 plLignes -rwxrwxrwx 17 4 5
 trois drwxrwxrwx 8.1K
 vide -rwxrwxrwx 0
+@
+directory folderForTesting/deux/quatre
+quatre -rw-r--r-- 0
 @
 directory folderForTesting/deux/trois
 trois drwxrwxrwx 4.1K
