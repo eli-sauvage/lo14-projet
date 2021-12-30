@@ -5,5 +5,5 @@
 ## TODO / Known Issues
  - possibility for "cd ../.."
  - ls : missing "-l", "-a" and "-la"
- - changing "/" to "\"
+ - changing "/" to "\\"
  - bash client.sh --> vsh
