@@ -35,17 +35,25 @@ elif [ "$1" = "-browse" ]; then
 	fi
 	rep=$(echo "browse testForFolder / $4" | nc -w1 $ADRESSE $PORT)
 	if [ ! "$rep" = "ok" ]; then #erreur (autre que ok)
-		echo "$rep"
+		echo "err:$rep"
 		exit
 	fi
 	printf "$path> "
 	while read input; do
 		#parse arg (relative to absolute)
 		folders=$(echo $input | awk '{for (i=2; i<=NF; i++) print $i}')
-		if [ -z "$folders" ];then folders=".";fi
+		if [ -z "$folders" ]; then folders="."; fi
 		out=""
+		args=""
+		stopArgs=0
 		for folder in $folders; do
-			if [ "$folder" = "." ]; then
+			if [ "$folder" = "--" ]; then
+				stopArgs=1
+				continue
+			elif [ "${folder:0:1}" = "-" ] && [ $stopArgs -ne 1 ]; then
+				args="$args ${folder:1}"
+				continue
+			elif [ "$folder" = "." ]; then
 				folder="$path"
 			elif [ "$folder" = ".." ]; then
 				if [ "$path" = "/" ]; then
@@ -67,45 +75,97 @@ elif [ "$1" = "-browse" ]; then
 					folder=$path/$folder
 				fi
 			fi
-			if [ ! -z "$out" ];then out="$out ";fi
+			if [ ! -z "$out" ]; then out="$out "; fi
 			out="$out$folder"
 		done
 		folder=$out
 		# break
 		commande=$(echo $input | awk '{print $1}')
 		if [ "$commande" = "ls" ]; then
-			# echo "browse ls $folder $4"
-			rep=$(echo "browse ls $folder $4" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
-		elif [ "$commande" = "cd" ]; then
-			folder="$(echo $folder | awk '{print $1}')" #only one arg
-			# echo $"browse testForFolder $folder $4"
-			rep=$(echo "browse testForFolder $folder $4" | nc -w1 $ADRESSE $PORT)
-			if [ ! "$rep" = "ok" ]; then #erreur (autre que ok)
-				echo "err:$rep"
+			if [ -z "$args" ]; then
+				# echo "browse ls $folder $4"
+				rep=$(echo "browse ls $folder $4" | nc -w1 $ADRESSE $PORT)
+				echo "$rep"
 			else
-				path="$folder"
+				echo "argument(s) $args inconnu(s)"
+			fi
+		elif [ "$commande" = "cd" ]; then
+			if [ -z "$args" ]; then
+				folder="$(echo $folder | awk '{print $1}')" #only one arg
+				# echo $"browse testForFolder $folder $4"
+				rep=$(echo "browse testForFolder $folder $4" | nc -w1 $ADRESSE $PORT)
+				if [ ! "$rep" = "ok" ]; then #erreur (autre que ok)
+					echo "err:$rep"
+				else
+					path="$folder"
+				fi
+			else
+				echo "argument(s) $args inconnu(s)"
 			fi
 		elif [ "$commande" = "pwd" ]; then
-			echo $path
+			if [ -z "$args" ]; then
+				echo $path
+			else
+				echo "argument(s) $args inconnu(s)"
+			fi
 		elif [ "$commande" = "cat" ]; then
-			# echo "browse cat $folder $4"
-			rep=$(echo "browse cat $folder $4" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
+			if [ -z "$args" ]; then
+				# echo "browse cat $folder $4"
+				rep=$(echo "browse cat $folder $4" | nc -w1 $ADRESSE $PORT)
+				echo "$rep"
+			else
+				echo "argument(s) $args inconnu(s)"
+			fi
 		elif [ "$commande" = "rm" ]; then
-			rep=$(echo "browse rm $folder $4" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
+			if [ -z "$args" ]; then
+				rep=$(echo "browse rm $folder $4" | nc -w1 $ADRESSE $PORT)
+				echo "$rep"
+			else
+				echo "argument(s) $args inconnu(s)"
+			fi
 		elif [ "$commande" == "touch" ]; then
-			rep=$(echo "browse touch $folder $4" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
+			if [ -z "$args" ]; then
+				rep=$(echo "browse touch $folder $4" | nc -w1 $ADRESSE $PORT)
+				echo "$rep"
+			else
+				echo "argument(s) $args inconnu(s)"
+			fi
 		elif [ "$commande" == "mkdir" ]; then
-			rep=$(echo "browse mkdir $folder $4" | nc -w1 $ADRESSE $PORT)
-			echo "$rep"
+			if [ -z "$args" ]; then
+				rep=$(echo "browse mkdir $folder $4" | nc -w1 $ADRESSE $PORT)
+				echo "$rep"
+			else
+				optionP="0"
+				for arg in $args; do
+					if [ "$arg" == "p" ]; then
+						optionP="1"
+					else
+						echo argument $arg inconnu
+						printf "$path> "
+						continue 2
+					fi
+				done
+				if [ "$optionP" = "1" ]; then
+					foldersToCreate=$(echo $folder | awk -F "/" 'BEGIN{p=""};{for(i=2; i<=NF; i++){p=p"/"$i;print p}}')
+					for folder in $foldersToCreate; do
+						rep=$(echo "browse mkdir $folder $4" | nc -w1 $ADRESSE $PORT)
+						echo "$rep"
+					done
+				fi
+			fi
 		elif [ "$commande" = "help" ]; then
-			echo "commandes : ls, cd, exit"
+			if [ -z "$args" ]; then
+				echo "commandes : ls, cd, exit"
+			else
+				echo "argument(s) $args inconnu(s)"
+			fi
 		elif [ "$commande" = "exit" ]; then
-			break
-		else
+			if [ -z "$args" ]; then
+				break
+			else
+				echo "argument(s) $args inconnu(s)"
+			fi
+		elif [ ! -z "$commande" ]; then
 			echo "commande non reconnue, essayez 'help' pour une liste des commandes ou exit pour sortir"
 		fi
 		printf "$path> "
