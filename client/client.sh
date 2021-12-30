@@ -42,7 +42,7 @@ elif [ "$1" = "-browse" ]; then
 	while read input; do
 		#parse arg (relative to absolute)
 		folders=$(echo $input | awk '{for (i=2; i<=NF; i++) print $i}')
-		if [ -z "$folders" ]; then folders="."; fi
+		if [ -z "$(echo $folders | sed 's/-[^ ]*//g' | sed 's/ //g')" ]; then folders=$folders" ."; fi #sed to repose opts
 		out=""
 		args=""
 		stopArgs=0
@@ -82,13 +82,30 @@ elif [ "$1" = "-browse" ]; then
 		# break
 		commande=$(echo $input | awk '{print $1}')
 		if [ "$commande" = "ls" ]; then
-			if [ -z "$args" ]; then
-				# echo "browse ls $folder $4"
-				rep=$(echo "browse ls $folder $4" | nc -w1 $ADRESSE $PORT)
-				echo "$rep"
-			else
-				echo "argument(s) $args inconnu(s)"
+			optionA="0"
+			optionL="0"
+			for arg in $args; do
+				if [ "$arg" = "a" ]; then
+					optionA="1"
+				elif [ "$arg" = "l" ]; then
+					optionL="1"
+				elif [ "$arg" = "la" ] || [ "$arg" = "al" ]; then
+					optionL="1"
+					optionA="1"
+				else
+					echo argument $arg inconnu
+					printf "$path> "
+					continue 2
+				fi
+			done
+			rep=$(echo "browse ls $folder $4" | nc -w1 $ADRESSE $PORT)
+			if [ ! "$optionA" = "1" ]; then
+				rep=$(echo "$rep" | awk '{if(substr($1, 0, 1)!=".")print $0}')
 			fi
+			if [ ! "$optionL" = "1" ]; then
+				rep=$(echo "$rep" | awk '{if(substr($2, 0, 1)=="d")print $1"\\"; else if(index($2, "x") != 0)print $1"*";else print$1}')
+			fi
+			echo "$rep"
 		elif [ "$commande" = "cd" ]; then
 			if [ -z "$args" ]; then
 				folder="$(echo $folder | awk '{print $1}')" #only one arg
