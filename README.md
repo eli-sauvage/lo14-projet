@@ -5,4 +5,3 @@
 ## TODO / Known Issues
  - possibility for "cd ../.."
  - changing "/" to "\\"
- - bash client.sh --> vsh
