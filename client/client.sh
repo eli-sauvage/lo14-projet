@@ -6,6 +6,8 @@ ADRESSE=$2
 PORT=$3
 toArchivePath=$(realpath $(dirname $0))"/toArchive.sh"
 unArchivePath=$(realpath $(dirname $0))"/unarchive.sh"
+
+
 if [ "$1" = "-create" ]; then
 	if [ -z $3 ]; then
 		echo "usage vsh -create ADRESSE PORT nom-archive"
@@ -19,15 +21,21 @@ if [ "$1" = "-create" ]; then
 	var=$(echo $commande | sed "s/\\\/\\\\\\\/g" | nc -w1 $ADRESSE $PORT)
 	echo $var #response from the server
 	cd $currentFolder
+	
+	
 elif [ "$1" = "-extract" ]; then
 	if [ -f /tmp/arc.arc ]; then rm /tmp/arc.arc; fi
 	while read line; do
 		echo $line >>/tmp/arc.arc
 	done <<<$(echo "extract $4" | nc -w1 localhost $PORT)
 	bash $unArchivePath /tmp/arc.arc
+	
+	
 elif [ "$1" = "-list" ]; then
 	rep=$(echo "list" | nc -w1 $ADRESSE $PORT)
 	echo "$rep"
+	
+	
 elif [ "$1" = "-browse" ]; then
 	path="/"
 	if [ -z $4 ]; then
@@ -40,9 +48,10 @@ elif [ "$1" = "-browse" ]; then
 		exit
 	fi
 	printf "$path> " | sed 's/\//\\/g'
-	while read input; do
+	
+	while read -r input; do
 		#parse arg (relative to absolute)
-		folders=$(echo $input | awk '{for (i=2; i<=NF; i++) print $i}')
+		folders=$(echo $input | awk '{for (i=2; i<=NF; i++) print $i}' | sed 's/\\/\//g')
 		if [ -z "$(echo $folders | sed 's/-[^ ]*//g' | sed 's/ //g')" ]; then folders=$folders" ."; fi #sed to repose opts
 		out=""
 		args=""
@@ -82,6 +91,8 @@ elif [ "$1" = "-browse" ]; then
 		folder=$out
 		# break
 		commande=$(echo $input | awk '{print $1}')
+		
+		
 		if [ "$commande" = "ls" ]; then
 			optionA="0"
 			optionL="0"
@@ -107,6 +118,8 @@ elif [ "$1" = "-browse" ]; then
 				rep=$(echo "$rep" | awk '{if(substr($2, 0, 1)=="d")print $1"\\"; else if(index($2, "x") != 0)print $1"*";else print$1}')
 			fi
 			echo "$rep"
+			
+			
 		elif [ "$commande" = "cd" ]; then
 			if [ -z "$args" ]; then
 				folder="$(echo $folder | awk '{print $1}')" #only one arg
@@ -120,12 +133,16 @@ elif [ "$1" = "-browse" ]; then
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
+			
+			
 		elif [ "$commande" = "pwd" ]; then
 			if [ -z "$args" ]; then
 				echo $path | sed 's/\//\\/g'
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
+			
+			
 		elif [ "$commande" = "cat" ]; then
 			if [ -z "$args" ]; then
 				# echo "browse cat $folder $4"
@@ -134,6 +151,8 @@ elif [ "$1" = "-browse" ]; then
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
+			
+			
 		elif [ "$commande" = "rm" ]; then
 			if [ -z "$args" ]; then
 				rep=$(echo "browse rm $folder $4" | nc -w1 $ADRESSE $PORT)
@@ -141,6 +160,8 @@ elif [ "$1" = "-browse" ]; then
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
+			
+			
 		elif [ "$commande" == "touch" ]; then
 			if [ -z "$args" ]; then
 				rep=$(echo "browse touch $folder $4" | nc -w1 $ADRESSE $PORT)
@@ -148,6 +169,8 @@ elif [ "$1" = "-browse" ]; then
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
+			
+			
 		elif [ "$commande" == "mkdir" ]; then
 			if [ -z "$args" ]; then
 				rep=$(echo "browse mkdir $folder $4" | nc -w1 $ADRESSE $PORT)
@@ -171,12 +194,16 @@ elif [ "$1" = "-browse" ]; then
 					done
 				fi
 			fi
+			
+			
 		elif [ "$commande" = "help" ]; then
 			if [ -z "$args" ]; then
 				echo "commandes : ls, cd, exit"
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
+			
+			
 		elif [ "$commande" = "exit" ]; then
 			if [ -z "$args" ]; then
 				break
