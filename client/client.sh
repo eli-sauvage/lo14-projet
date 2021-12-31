@@ -39,7 +39,7 @@ elif [ "$1" = "-browse" ]; then
 		echo "err:$rep"
 		exit
 	fi
-	printf "$path> "
+	printf "$path> " | sed 's/\//\\/g'
 	while read input; do
 		#parse arg (relative to absolute)
 		folders=$(echo $input | awk '{for (i=2; i<=NF; i++) print $i}')
@@ -59,7 +59,7 @@ elif [ "$1" = "-browse" ]; then
 			elif [ "$folder" = ".." ]; then
 				if [ "$path" = "/" ]; then
 					echo "pas de dossier parent"
-					printf "$path> "
+					printf "$path> " | sed 's/\//\\/g'
 					continue
 				else
 					path=$path/$folder
@@ -95,7 +95,7 @@ elif [ "$1" = "-browse" ]; then
 					optionA="1"
 				else
 					echo argument $arg inconnu
-					printf "$path> "
+					printf "$path> " | sed 's/\//\\/g'
 					continue 2
 				fi
 			done
@@ -122,7 +122,7 @@ elif [ "$1" = "-browse" ]; then
 			fi
 		elif [ "$commande" = "pwd" ]; then
 			if [ -z "$args" ]; then
-				echo $path
+				echo $path | sed 's/\//\\/g'
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
@@ -186,7 +186,7 @@ elif [ "$1" = "-browse" ]; then
 		elif [ ! -z "$commande" ]; then
 			echo "commande non reconnue, essayez 'help' pour une liste des commandes ou exit pour sortir"
 		fi
-		printf "$path> "
+		printf "$path> " | sed 's/\//\\/g'
 	done
 else
 	echo "CMD must be one of \"-create, -list, -browse, -extract\""
