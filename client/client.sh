@@ -5,7 +5,7 @@ fi
 ADRESSE=$2
 PORT=$3
 toArchivePath=$(realpath $(dirname $0))"/toArchive.sh"
-unArchivePath=$(realpath $(dirname $0))"/unArchive.sh"
+unArchivePath=$(realpath $(dirname $0))"/unarchive.sh"
 if [ "$1" = "-create" ]; then
 	if [ -z $3 ]; then
 		echo "usage vsh -create ADRESSE PORT nom-archive"
