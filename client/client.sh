@@ -5,6 +5,7 @@ fi
 ADRESSE=$2
 PORT=$3
 toArchivePath=$(realpath $(dirname $0))"/toArchive.sh"
+unArchivePath=$(realpath $(dirname $0))"/unArchive.sh"
 if [ "$1" = "-create" ]; then
 	if [ -z $3 ]; then
 		echo "usage vsh -create ADRESSE PORT nom-archive"
@@ -23,7 +24,7 @@ elif [ "$1" = "-extract" ]; then
 	while read line; do
 		echo $line >>/tmp/arc.arc
 	done <<<$(echo "extract $4" | nc -w1 localhost $PORT)
-	bash unarchive.sh /tmp/arc.arc
+	bash $unArchivePath /tmp/arc.arc
 elif [ "$1" = "-list" ]; then
 	rep=$(echo "list" | nc -w1 $ADRESSE $PORT)
 	echo "$rep"

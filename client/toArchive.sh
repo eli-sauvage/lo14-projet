@@ -34,7 +34,6 @@ while read line;do
 				h=$h$size
 				bodyLine=$((bodyLine+size))
 				while read elemLine;do
-					echo $elemLine >> out
 					b=$b"$elemLine\n"
 				done < $element
 			fi
