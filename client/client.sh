@@ -182,7 +182,7 @@ elif [ "$1" = "-browse" ]; then
 						optionP="1"
 					else
 						echo argument $arg inconnu
-						printf "$path> "
+						printf "$path> " | sed 's/\//\\/g'
 						continue 2
 					fi
 				done
