@@ -14,10 +14,10 @@ if [ "$1" = "-create" ]; then
 		exit
 	fi
 	currentFolder="$(basename $(pwd))"
-	echo $currentFolder
+	# echo $currentFolder
 	cd ..
 	commande="create $4 "$(bash $toArchivePath $currentFolder)
-	echo "commande qui va etre envoyee au serveur : "$commande
+	# echo "commande qui va etre envoyee au serveur : "$commande
 	var=$(echo $commande | sed "s/\\\/\\\\\\\/g" | nc -w1 $ADRESSE $PORT)
 	echo $var #response from the server
 	cd $currentFolder
@@ -29,7 +29,7 @@ elif [ "$1" = "-extract" ]; then
 		echo $line >>/tmp/arc.arc
 	done <<<$(echo "extract $4" | nc -w1 localhost $PORT)
 	bash $unArchivePath /tmp/arc.arc
-	
+	echo "l'archive a ete extraite"
 	
 elif [ "$1" = "-list" ]; then
 	rep=$(echo "list" | nc -w1 $ADRESSE $PORT)

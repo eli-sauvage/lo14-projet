@@ -14,7 +14,7 @@ headerBegin=-1
 bodyBegin=-1
 root=$(pwd)
 while read line; do
-echo $line
+# echo $line
 	((lineCounter++))
 	if [ $lineCounter -eq 1 ];then
 		headerBegin=$(echo $line | cut -d':' -f1)
