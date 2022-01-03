@@ -8,4 +8,4 @@
 `vsh CMD ADRESS PORT [opt]` on the client
 # TODO / Known Issues
  - possibility for "cd ../.."
- - changing "/" to "\\"
+ - chmod in -extract
