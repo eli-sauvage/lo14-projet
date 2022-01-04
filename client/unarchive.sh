@@ -29,6 +29,9 @@ while read line; do
 		elif [ "$line" != "@" ];then #file or dir inside the currentFolder
 			type=$(echo $line | cut -d' ' -f2 | head -c 1)
 			name=$(echo $line | cut -d' ' -f1)
+			userr=$(echo $line | cut -d ' ' -f2 | head -c 4 | sed 's/-//g')
+			groupr=$(echo $line | cut -d ' ' -f2 | cut -c 5-7 | sed 's/-//g')
+			othersr=$(echo $line | cut -d ' ' -f2 | tail -c 3 | sed 's/-//g')
 			if [ "$type" = "-" ];then #file
 				#echo f $name
 				touch "$currentFolder/$name"
@@ -42,6 +45,9 @@ while read line; do
 #						echo "line : $fileLine"
 						echo $fileLine >> "$currentFolder/$name"
 					done <<< $(cat $1 | head -n $((bodyBegin-2+startLine+lineNb)) | tail -$(($lineNb)))
+					chmod u=$userr,g=$groupr,o=$othersr "$currentFolder/$name"
+				else
+					chmod u=$userr,g=$groupr,o=$othersr "$currentFolder/$name"
 				fi
 			elif [ "$type" = "d" ];then #dir
 #				echo d $name
