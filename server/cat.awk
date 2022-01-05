@@ -1,3 +1,4 @@
+#args : path et file
 BEGIN{
     flag=0
     fileBegin=-1
