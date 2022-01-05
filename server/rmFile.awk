@@ -1,7 +1,5 @@
 # args : p=path f=folderName
 BEGIN{
-    blockH=0
-    blockB=0
     flag=0
     folder=p"/"f
 };
