@@ -198,7 +198,7 @@ elif [ "$1" = "-browse" ]; then
 			
 		elif [ "$commande" = "help" ]; then
 			if [ -z "$args" ]; then
-				echo "commandes : ls, cd, exit"
+				echo "commandes : ls, cd, pwd, cat, rm, touch, mkdir, help, exit"
 			else
 				echo "argument(s) $args inconnu(s)"
 			fi
