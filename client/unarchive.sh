@@ -50,8 +50,6 @@ while read line; do
 				else
 					chmod u=$userr,g=$groupr,o=$othersr "$currentFolder/$name"
 				fi
-			elif [ "$type" = "d" ];then #dir
-				(())
 			fi
 		fi
 	fi
