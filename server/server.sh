@@ -106,7 +106,6 @@ function commande-browse() { #browse mode[ls, cd, cat, rm, touch, mkdir] current
 			while read l; do
 				echo $l
 			done <<<$(sed -n "/^directory $(echo $path | sed 's/\//\\\//g')/,/^@/{p;/^@/q}" $archive.arc | head --lines=-1 | tail --lines=+2) #https://unix.stackexchange.com/questions/264962/print-lines-of-a-file-between-two-matching-patterns
-			echo $filesInCurrentPath
 		elif [ $mode = "cat" ]; then
 			if ! testForFile $path $archive; then
 				echo "le fichier $path n'existe pas dans $archive"
