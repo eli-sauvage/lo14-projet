@@ -29,7 +29,6 @@ while read line;do
 		if [ ! -d $element ];then
 			size=$(wc -l $element | cut -d' ' -f1)
 			if [ "$size" != "0" ];then
-			# echo $currentFolder $size $element >> out
 				h=$h"$bodyLine "
 				h=$h$size
 				bodyLine=$((bodyLine+size))
@@ -43,13 +42,7 @@ while read line;do
 done <<< $(ls -R "$folder")
 h=$h"@\n"
 
-#echo $realLineCount
-
 lineNb=$(echo $h | grep -Fo "\n" | wc -l)
 lineNb=$((lineNb+3))
-
-#printf "3:$lineNb\n\n"
-#printf "${h}"
-#printf "${b}\n"
 
 echo "3:$lineNb\n\n${h}${b}\n"
