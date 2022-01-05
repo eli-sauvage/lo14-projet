@@ -54,7 +54,5 @@ while read line; do
 				(())
 			fi
 		fi
-	elif [ $lineCounter -ge $bodyBegin ];then #IN BODY
-		(())
 	fi
 done < $1
