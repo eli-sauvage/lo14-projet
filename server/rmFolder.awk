@@ -39,7 +39,7 @@ BEGIN{
     if(inParentDir && $1 == f)blockPrint=1
     if(!flag && !blockPrint && !blockPrintB && NR != 1){
         out=out$0"\n"
-    }else{
+    }else if(!blockPrintB){
         lignesEnMoins++
         # print "-----"NR$0flag blockPrint blockPrintB lignesEnMoins
     }
