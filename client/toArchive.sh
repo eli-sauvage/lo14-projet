@@ -43,13 +43,7 @@ while read line;do
 done <<< $(ls -R "$folder")
 h=$h"@\n"
 
-#echo $realLineCount
-
 lineNb=$(echo $h | grep -Fo "\n" | wc -l)
 lineNb=$((lineNb+3))
-
-#printf "3:$lineNb\n\n"
-#printf "${h}"
-#printf "${b}\n"
 
 echo "3:$lineNb\n\n${h}${b}\n"
