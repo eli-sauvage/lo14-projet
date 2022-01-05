@@ -14,7 +14,6 @@ headerBegin=-1
 bodyBegin=-1
 root=$(pwd)
 while read line; do
-# echo $line
 	((lineCounter++))
 	if [ $lineCounter -eq 1 ];then
 		headerBegin=$(echo $line | cut -d':' -f1)
@@ -24,7 +23,9 @@ while read line; do
 		if [ "$(echo $line | head -c10)" = "directory " ];then
 			currentFolder=$(echo $line | cut -c 11-)
 #			echo "dossier $currentFolder"
-			if [ ! -d $currentFolder ];then mkdir -p $currentFolder;fi
+			if [ ! -d $currentFolder ];then 
+				mkdir -p $currentFolder
+			fi
 			#cd $currentFolder
 		elif [ "$line" != "@" ];then #file or dir inside the currentFolder
 			type=$(echo $line | cut -d' ' -f2 | head -c 1)
@@ -50,15 +51,10 @@ while read line; do
 					chmod u=$userr,g=$groupr,o=$othersr "$currentFolder/$name"
 				fi
 			elif [ "$type" = "d" ];then #dir
-#				echo d $name
 				(())
 			fi
-			#touch $currentFolder $(echo $line | cut -d' ' -f1)
 		fi
 	elif [ $lineCounter -ge $bodyBegin ];then #IN BODY
-#		echo "body "$line
 		(())
 	fi
-	#echo $lineCounter $line
 done < $1
-#echo $headerBegin $bodyBegin
