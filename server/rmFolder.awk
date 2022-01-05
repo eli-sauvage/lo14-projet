@@ -3,10 +3,12 @@ BEGIN{
     flag=0
     blockPrint=0
     folder=p"/"f
-    print folder
+    # print folder
     inParentDir=0
     bodyBegin=-1
     blockPrintB=0
+    lignesEnMoins=0
+    out=""
 };
 {
     if ( NR == 1 ){
@@ -35,19 +37,21 @@ BEGIN{
         if($2 == p) inParentDir=1
     }
     if(inParentDir && $1 == f)blockPrint=1
-    if(!flag && !blockPrint && !blockPrintB){
-        print $0
+    if(!flag && !blockPrint && !blockPrintB && NR != 1){
+        out=out$0"\n"
     }else{
-        # print "-----"NR$0flag blockPrint blockPrintB
+        lignesEnMoins++
+        # print "-----"NR$0flag blockPrint blockPrintB lignesEnMoins
     }
     if(blockPrint){
         blockPrint=0
     }
     if(blockPrintB){
-        print " "
+        out=out" \n"
         blockPrintB=0
     }
 };
 END{
-
+    print "3:"bodyBegin-lignesEnMoins+1 #+1 for 3:x
+    print out
 }
