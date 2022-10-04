@@ -1,4 +1,4 @@
-# LO14 - Archive manager
+# LO14 - Archive manager : Automne 2021
 Ceci est un projet d'école (LO14 - Administration des systèmes unix)
 C'est un petit utilitaire en bash, pour créer et décompresser des archives  
 - l'utilitaire ne permet pas de réduire la place que prennent les fichiers : il ne fait que regrouper les noms, permissions et contenus des ficiers de l'arborescence à archiver dans un seul gros fichier d'archive <b>stocké dans un serveur distant</b>
